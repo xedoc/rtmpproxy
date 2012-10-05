@@ -1,5 +1,6 @@
-﻿rtmpproxy/bin/*
-rtmpproxy/bin/Debug/*
-rtmpproxy/bin/Release/*
-rtmpproxy/obj/x86/Debug/*
-rtmpproxy/obj/x86/Release/*
+# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
+bin
+obj
+
+# mstest test results
+TestResults
