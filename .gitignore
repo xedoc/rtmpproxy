@@ -1,0 +1,5 @@
+﻿rtmpproxy/bin/*
+rtmpproxy/bin/Debug/*
+rtmpproxy/bin/Release/*
+rtmpproxy/obj/x86/Debug/*
+rtmpproxy/obj/x86/Release/*
