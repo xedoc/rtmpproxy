@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using rtmpproxy.Messages;
 
 namespace rtmpproxy
 {
@@ -24,6 +25,15 @@ namespace rtmpproxy
             set;
         }
         public byte[] Data
+        {
+            get;
+            set;
+        }
+    }
+
+    class ConnectData : EventArgs
+    {
+        public CmdConnect ConnectObject
         {
             get;
             set;

@@ -51,8 +51,8 @@ namespace rtmpproxy
             Buffer.BlockCopy(srcArray, startIndex, resultArray, 0, Count);
 
             return resultArray;
-        }
-        public static UInt32 BigIndianUint32(byte[] srcArray, int startIndex, int bytesCount)
+        }        
+        public static UInt32 BigIndianInt(byte[] srcArray, int startIndex, int bytesCount)
         {
             uint resultValue = 0;
             var shiftBits = (bytesCount - 1) * 8;
@@ -62,6 +62,37 @@ namespace rtmpproxy
                 shiftBits -= 8;
             }
             return resultValue;
+        }
+        public static bool AMF0Number(byte[] srcArray, int startIndex, ref float result )
+        {
+            byte[] slice = Right(srcArray, startIndex);
+            if (slice == null)
+                return false;
+            if (slice.Length <= 3)
+                return false;
+            
+            result = BitConverter.ToSingle( slice.Reverse().ToArray(), startIndex );
+            return true;
+        }
+        public static String AMF0String(byte[] srcArray, int startIndex)
+        {
+            byte[] slice = Right(srcArray, startIndex );
+
+            if (slice == null)
+                return null;
+            if (slice.Length <= 3)
+                return null;
+
+            if( slice[0] != (byte)AMF0Types.String )
+                return null;
+
+            var length = BigIndianInt(slice, 1, 2);
+
+            if (slice.Length < (3 + length))
+                return null;
+
+            return Encoding.ASCII.GetString(slice,3,(int)length);
+            
         }
     }
 }

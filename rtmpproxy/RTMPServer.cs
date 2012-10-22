@@ -28,10 +28,6 @@ namespace rtmpproxy
         {            
         }
 
-        private void OnData(object sender, SocketData socketdata)
-        {
-            
-        }
         private void OnNewClient(object sender, SocketData socketdata)
         {
             var client = new RTMPEndpoint(socketdata.Socket);

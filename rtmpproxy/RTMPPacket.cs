@@ -5,21 +5,7 @@ using System.Text;
 
 namespace rtmpproxy
 {
-    public enum PacketType
-    {
-        VersionNumber,
-        Handshake,
-        Chunk,
-        Unknown
-    }
-    public enum ChunkType
-    {
-        Header11,   //11 bytes long and so on
-        Header7,    
-        Header3,
-        Header0,
-        Undefined
-    }
+
     //
     // + RTMP Packet structure +
     //+-------------+----------------+-------------------+--------------+ 
@@ -239,23 +225,23 @@ namespace rtmpproxy
             {
                 case rtmpproxy.ChunkType.Header3:
                     {
-                        Timestamp = ArrayUtil.BigIndianUint32(RawMessageHeader, 0, 3);
+                        Timestamp = ArrayUtil.BigIndianInt(RawMessageHeader, 0, 3);
                     }
                     break;
                 case rtmpproxy.ChunkType.Header7:
                     {
-                        Timestamp = ArrayUtil.BigIndianUint32(RawMessageHeader, 0, 3);
+                        Timestamp = ArrayUtil.BigIndianInt(RawMessageHeader, 0, 3);
                         ExtendedTimestamp = 0;
-                        MessageLength = (int)ArrayUtil.BigIndianUint32(RawMessageHeader, 3, 3);
+                        MessageLength = (int)ArrayUtil.BigIndianInt(RawMessageHeader, 3, 3);
                         MessageTypeId = RawMessageHeader[6];
                     }
                     break;
                 case rtmpproxy.ChunkType.Header11:
                     {
-                        Timestamp = ArrayUtil.BigIndianUint32(RawMessageHeader, 0, 3);
-                        MessageLength = (int)ArrayUtil.BigIndianUint32(RawMessageHeader, 3, 3);
+                        Timestamp = ArrayUtil.BigIndianInt(RawMessageHeader, 0, 3);
+                        MessageLength = (int)ArrayUtil.BigIndianInt(RawMessageHeader, 3, 3);
                         MessageTypeId = RawMessageHeader[6];
-                        MessageStreamId = ArrayUtil.BigIndianUint32(RawMessageHeader, 7, 3);
+                        MessageStreamId = ArrayUtil.BigIndianInt(RawMessageHeader, 7, 3);
                     }
                     break;
                 default:
@@ -347,6 +333,9 @@ namespace rtmpproxy
                                     RawLength = chunkLength;
                                     RawData = new byte[RawLength];
                                     Buffer.BlockCopy(data, 0, RawData, 0, RawLength);
+
+                                    RawChunkData = new byte[MessageLength];
+                                    Buffer.BlockCopy(data, RawLength - MessageLength, RawChunkData, 0, MessageLength);
                                 }
                             }
                             break;

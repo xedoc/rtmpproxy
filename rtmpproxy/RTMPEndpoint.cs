@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Diagnostics;
+using rtmpproxy.Messages;
+
 namespace rtmpproxy
 {
     public enum RTMPState
@@ -24,6 +26,8 @@ namespace rtmpproxy
         private byte[] currentData;
         private RTMPPacket previousPacket;
 
+        private RTMPEndpointOptions options;
+
         public RTMPState CurrentState
         {
             get;
@@ -43,6 +47,8 @@ namespace rtmpproxy
             currentData = emptyArray;
             Socket.OnDataReceived += OnData;
             CurrentState = RTMPState.Unitialized;
+
+            options = new RTMPEndpointOptions();            
         }
         public byte Version
         {
@@ -109,12 +115,28 @@ namespace rtmpproxy
                         {
                             packet = new RTMPPacket(PacketType.Chunk);
                             if (packet.InitWith(currentData, previousPacket))
-                            {
+                            {                                
                                 previousPacket = packet;
                             }
 
                         }
-                        Debug.Print(String.Format("Received RTMP chunk {0} bytes: {1}", packet.RawData.Length, BitConverter.ToString(packet.RawData)));
+
+                        Debug.Print(String.Format("Received RTMP chunk {0} bytes, Msg Id: {1} : {2}", packet.RawData.Length, packet.MessageTypeId, BitConverter.ToString(packet.RawData)));
+                        Debug.Print(String.Format("Chunk payload: {0}", BitConverter.ToString(packet.RawChunkData)));
+
+                        var msgID = packet.MessageTypeId;
+                        // Control message
+                        if (msgID >= 1 && msgID <= 7)
+                        {
+                            if (!ParseControlMessage((MessageID)msgID, packet.RawChunkData))
+                                Debug.Print("Failed to parse control message");
+                        }
+                        // Normal message
+                        else
+                        {
+                        }
+
+
 
                     }
                     break;
@@ -123,6 +145,30 @@ namespace rtmpproxy
                     break;
             }
             return packet.RawLength;
+        }
+        private bool ParseControlMessage( MessageID id, byte[] payload )
+        {
+            switch (id)
+            {
+                case MessageID.SetChunkSize:
+                    options.ChunkSize = ArrayUtil.BigIndianInt(payload, 0, 4);
+                    break;
+                // Parse commands like connect
+                case MessageID.CommandAMF0:
+                    var command = ArrayUtil.AMF0String(payload, 0);
+                    switch (command.ToLower())
+                    {
+                        case "connect":
+                            var cmdConnect = new CmdConnect( payload );
+                            break;
+                        default:
+                            return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }
+            return true;
         }
 
     }
