@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AMFObject.cs" />
     <Compile Include="ArrayUtil.cs" />
     <Compile Include="Messages\CmdConnect.cs" />
     <Compile Include="RTMPEndpointOptions.cs" />

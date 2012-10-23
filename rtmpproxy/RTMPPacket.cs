@@ -90,7 +90,7 @@ namespace rtmpproxy
             set;
         }
 
-        public byte[] RawChunkData
+        public byte[] MessageData
         {
             get;
             set;
@@ -334,8 +334,8 @@ namespace rtmpproxy
                                     RawData = new byte[RawLength];
                                     Buffer.BlockCopy(data, 0, RawData, 0, RawLength);
 
-                                    RawChunkData = new byte[MessageLength];
-                                    Buffer.BlockCopy(data, RawLength - MessageLength, RawChunkData, 0, MessageLength);
+                                    MessageData = new byte[MessageLength];
+                                    Buffer.BlockCopy(data, RawLength - MessageLength, MessageData, 0, MessageLength);
                                 }
                             }
                             break;

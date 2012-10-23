@@ -108,36 +108,28 @@ namespace rtmpproxy
                         if (previousPacket == null)
                         {
                             previousPacket = new RTMPPacket(PacketType.Chunk);
-                            previousPacket.InitWith(currentData);
+                            if( !previousPacket.InitWith(currentData) )
+                                return 0;
                             packet = previousPacket;
                         }
                         else
                         {
                             packet = new RTMPPacket(PacketType.Chunk);
-                            if (packet.InitWith(currentData, previousPacket))
-                            {                                
+                            if (!packet.InitWith(currentData, previousPacket))
+                                return 0;
+                            else
                                 previousPacket = packet;
-                            }
 
                         }
+                        if (packet.MessageLength > 0 && packet.MessageLength < packet.MessageData.Length)
+                            return 0;
 
                         Debug.Print(String.Format("Received RTMP chunk {0} bytes, Msg Id: {1} : {2}", packet.RawData.Length, packet.MessageTypeId, BitConverter.ToString(packet.RawData)));
-                        Debug.Print(String.Format("Chunk payload: {0}", BitConverter.ToString(packet.RawChunkData)));
+                        Debug.Print(String.Format("Chunk payload: {0}", BitConverter.ToString(packet.MessageData)));
 
                         var msgID = packet.MessageTypeId;
-                        // Control message
-                        if (msgID >= 1 && msgID <= 7)
-                        {
-                            if (!ParseControlMessage((MessageID)msgID, packet.RawChunkData))
+                        if (!ParseMessage((MessageID)msgID, packet.MessageData))
                                 Debug.Print("Failed to parse control message");
-                        }
-                        // Normal message
-                        else
-                        {
-                        }
-
-
-
                     }
                     break;
                 default:
@@ -146,7 +138,7 @@ namespace rtmpproxy
             }
             return packet.RawLength;
         }
-        private bool ParseControlMessage( MessageID id, byte[] payload )
+        private bool ParseMessage( MessageID id, byte[] payload )
         {
             switch (id)
             {

@@ -63,15 +63,14 @@ namespace rtmpproxy
             }
             return resultValue;
         }
-        public static bool AMF0Number(byte[] srcArray, int startIndex, ref float result )
+        public static bool AMF0Number(byte[] srcArray, int startIndex, ref double result )
         {
-            byte[] slice = Right(srcArray, startIndex);
+            byte[] slice = Mid(srcArray, startIndex, 8);
             if (slice == null)
                 return false;
-            if (slice.Length <= 3)
+            if (slice.Length < 8)
                 return false;
-            
-            result = BitConverter.ToSingle( slice.Reverse().ToArray(), startIndex );
+            result = BitConverter.ToDouble( slice.Reverse().ToArray(), 0 );
             return true;
         }
         public static String AMF0String(byte[] srcArray, int startIndex)
@@ -94,5 +93,24 @@ namespace rtmpproxy
             return Encoding.ASCII.GetString(slice,3,(int)length);
             
         }
+        public static Int32 FindPattern(byte[] srcArray, byte[] pattern, int startIndex)
+        {
+            var patternLength = pattern.Length;
+            var srcLength = srcArray.Length;
+            for (int i = 0; i < srcLength; i++)
+            {
+                var j = 0;
+                while (srcArray[i] == pattern[j])
+                {
+                    if (patternLength == j + 1)
+                        return i - patternLength + 1;
+                    j++;
+                    i++;
+                }
+
+            }
+            return -1;
+        }
+
     }
 }

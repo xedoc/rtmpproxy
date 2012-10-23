@@ -7,17 +7,38 @@ namespace rtmpproxy.Messages
 {
     class CmdConnect
     {
+        private byte[] objectEnd = {00,00,09};
+        private const int posID = 11;
+        private const int posConnObj = 10;
+
         public CmdConnect(byte[] payload)
         {
-            var payloadLen = payload.Length;
-            if( payloadLen <= 3 )
-                return;
-            if (ArrayUtil.BigIndianInt(payload, payloadLen - 3, 3) != 9)
+            int payloadLen = payload.Length;
+
+            double result = 0;
+            if (!ArrayUtil.AMF0Number(payload, posID, ref result))
                 return;
 
+            TransactionID = result;
 
-            AudioCodecs = new List<KeyValuePair<AudioCodec, bool>>();
-            VideoCodecs = new List<KeyValuePair<VideoCodec, bool>>();
+            var posConnObjEnd = ArrayUtil.FindPattern(payload, objectEnd, 20);
+            if (posConnObjEnd < 0)
+                return;
+            
+            var connObjectData = ArrayUtil.Mid(payload, 20, posConnObjEnd - 20);
+
+            var connObject = new AMFObject(connObjectData);
+
+            App = (string)connObject.GetProperty("app");
+            TcUrl = (string)connObject.GetProperty("tcUrl");
+            SwfUrl = (string)connObject.GetProperty("swfUrl");
+            PageUrl = (string)connObject.GetProperty("pageUrl");
+            Type = (string)connObject.GetProperty("type");
+            FlashVer = (string)connObject.GetProperty("flashver");
+            Fpad = (bool)connObject.GetProperty("fpad");
+            
+            AudioCodecs = new Dictionary<AudioCodec, bool>();
+            VideoCodecs = new Dictionary<VideoCodec, bool>();
             var audioCodecs = new AudioCodec[] {
                     AudioCodec.Raw,
                     AudioCodec.ADPCM,
@@ -46,13 +67,18 @@ namespace rtmpproxy.Messages
             };
 
             foreach( var codec in audioCodecs )
-                AudioCodecs.Add( new KeyValuePair<AudioCodec, bool>(codec, false ));
+                AudioCodecs.Add( codec, false );
 
             foreach (var codec in videoCodecs)
-                VideoCodecs.Add(new KeyValuePair<VideoCodec, bool>(codec, false));
+                VideoCodecs.Add( codec, false);
         }
 
-        public UInt32 TransactionID
+        public double TransactionID
+        {
+            get;
+            set;
+        }
+        public String Type
         {
             get;
             set;
@@ -82,12 +108,12 @@ namespace rtmpproxy.Messages
             get;
             set;
         }
-        public List<KeyValuePair<AudioCodec,bool>> AudioCodecs
+        public Dictionary<AudioCodec,bool> AudioCodecs
         {
             get;
             set;
         }
-        public List<KeyValuePair<VideoCodec,bool>> VideoCodecs
+        public Dictionary<VideoCodec,bool> VideoCodecs
         {
             get;
             set;
