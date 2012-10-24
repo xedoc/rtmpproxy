@@ -33,6 +33,10 @@ namespace rtmpproxy
 
     class ConnectData : EventArgs
     {
+        public ConnectData(CmdConnect obj)
+        {
+            ConnectObject = obj;
+        }
         public CmdConnect ConnectObject
         {
             get;

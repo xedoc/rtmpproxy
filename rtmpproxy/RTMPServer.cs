@@ -25,12 +25,18 @@ namespace rtmpproxy
             }
         }
         public RTMPServer()
-        {            
+        {        
+    
         }
-
+        private void OnConnect(object sender, ConnectData data)
+        {
+            var endpoint = sender as RTMPEndpoint;
+            endpoint.SendWinAck();
+        }
         private void OnNewClient(object sender, SocketData socketdata)
         {
             var client = new RTMPEndpoint(socketdata.Socket);
+            client.OnConnect += OnConnect;
             clients.Add(client);
         }
         public bool Start()

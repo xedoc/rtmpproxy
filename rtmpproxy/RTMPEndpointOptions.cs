@@ -7,7 +7,18 @@ namespace rtmpproxy
 {
     class RTMPEndpointOptions
     {
+        public RTMPEndpointOptions()
+        {
+            ChunkSize = 0;
+            WindowSize = 0;
+
+        }
         public UInt32 ChunkSize
+        {
+            get;
+            set;
+        }
+        public UInt32 WindowSize
         {
             get;
             set;

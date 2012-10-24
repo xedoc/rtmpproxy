@@ -20,6 +20,8 @@ namespace rtmpproxy
     }
     class RTMPEndpoint
     {
+
+        private const int standardWindowSize = 2500000;
         private const int versionPayloadLength = 1536;
         private const int versionNumber = 3;
         private readonly static byte[] emptyArray = new byte[0];
@@ -27,6 +29,10 @@ namespace rtmpproxy
         private RTMPPacket previousPacket;
 
         private RTMPEndpointOptions options;
+
+        #region Events
+        public EventHandler<ConnectData> OnConnect;
+        #endregion
 
         public RTMPState CurrentState
         {
@@ -138,13 +144,22 @@ namespace rtmpproxy
             }
             return packet.RawLength;
         }
+        private void Send(byte[] data)
+        {
+            Socket.Send(data);
+        }
         private bool ParseMessage( MessageID id, byte[] payload )
         {
             switch (id)
             {
+                //Parse control messages 1-7
                 case MessageID.SetChunkSize:
                     options.ChunkSize = ArrayUtil.BigIndianInt(payload, 0, 4);
                     break;
+                case MessageID.WindowAcknowledge:
+                    options.WindowSize = ArrayUtil.BigIndianInt(payload, 0, 4);
+                    break;
+                
                 // Parse commands like connect
                 case MessageID.CommandAMF0:
                     var command = ArrayUtil.AMF0String(payload, 0);
@@ -152,6 +167,8 @@ namespace rtmpproxy
                     {
                         case "connect":
                             var cmdConnect = new CmdConnect( payload );
+                            if (OnConnect != null)
+                                OnConnect(this, new ConnectData(cmdConnect));
                             break;
                         default:
                             return false;
@@ -162,6 +179,13 @@ namespace rtmpproxy
             }
             return true;
         }
+        public void SendWinAck()
+        {
+            if (options.WindowSize <= 0)
+                options.WindowSize = standardWindowSize;
 
+            var WinAckPacket = new WinAck(options.WindowSize);
+            Send(WinAckPacket.Serialize());
+        }
     }
 }

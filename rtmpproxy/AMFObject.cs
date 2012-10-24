@@ -62,9 +62,18 @@ namespace rtmpproxy
                 }
             }
         }
+        public void SetProperty(string name, object value)
+        {
+            if (_properties.Keys.FirstOrDefault(n => n == name) == null)
+                _properties.Add(name, value);
+            else
+                _properties[name] = value;
+        }
         public object GetProperty(string name)
         {
-            return _properties.FirstOrDefault(n => n.Key == name);
+            object result;
+            _properties.TryGetValue( name, out result );
+            return result;
         }
     }
 }

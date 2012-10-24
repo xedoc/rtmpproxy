@@ -10,11 +10,11 @@ namespace rtmpproxy.Messages
         private byte[] objectEnd = {00,00,09};
         private const int posID = 11;
         private const int posConnObj = 10;
+        private AMFObject connObject;
 
         public CmdConnect(byte[] payload)
         {
             int payloadLen = payload.Length;
-
             double result = 0;
             if (!ArrayUtil.AMF0Number(payload, posID, ref result))
                 return;
@@ -27,8 +27,8 @@ namespace rtmpproxy.Messages
             
             var connObjectData = ArrayUtil.Mid(payload, 20, posConnObjEnd - 20);
 
-            var connObject = new AMFObject(connObjectData);
-
+            connObject = new AMFObject(connObjectData);
+          
             App = (string)connObject.GetProperty("app");
             TcUrl = (string)connObject.GetProperty("tcUrl");
             SwfUrl = (string)connObject.GetProperty("swfUrl");
@@ -85,8 +85,13 @@ namespace rtmpproxy.Messages
         }
         public String App
         {
-            get;
-            set;
+            get { 
+                var v = connObject.GetProperty("app"); 
+                return v == null?null:v as string;  }
+            set 
+            {
+                
+            }
         }
         public String FlashVer
         {
