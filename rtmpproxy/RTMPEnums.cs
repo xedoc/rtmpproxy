@@ -5,6 +5,11 @@ using System.Text;
 
 namespace rtmpproxy
 {
+    public enum EventType: uint
+    {
+        MessageStreamBegin = 0
+    }
+
     public enum PacketType
     {
         VersionNumber,

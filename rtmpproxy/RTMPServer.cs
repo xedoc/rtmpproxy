@@ -31,7 +31,7 @@ namespace rtmpproxy
         private void OnConnect(object sender, ConnectData data)
         {
             var endpoint = sender as RTMPEndpoint;
-            endpoint.SendWinAck();
+            endpoint.ReplyConnect();
         }
         private void OnNewClient(object sender, SocketData socketdata)
         {

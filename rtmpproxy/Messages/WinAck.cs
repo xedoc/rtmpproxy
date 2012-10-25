@@ -9,7 +9,7 @@ namespace rtmpproxy.Messages
     {
         public WinAck(UInt32 size)
         {
-
+            Size = size;
         }
         public UInt32 Size
         {

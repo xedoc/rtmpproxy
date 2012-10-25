@@ -49,9 +49,13 @@
     <Compile Include="AMFObject.cs" />
     <Compile Include="ArrayUtil.cs" />
     <Compile Include="Messages\CmdConnect.cs" />
+    <Compile Include="Messages\Header.cs" />
+    <Compile Include="Messages\StreamBegin.cs" />
+    <Compile Include="Messages\Bandwidth.cs" />
+    <Compile Include="Messages\ResultSuccess.cs" />
     <Compile Include="Messages\WinAck.cs" />
     <Compile Include="RTMPEndpointOptions.cs" />
-    <Compile Include="Messages\ControlSetChunkSize.cs" />
+    <Compile Include="Messages\SetChunkSize.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

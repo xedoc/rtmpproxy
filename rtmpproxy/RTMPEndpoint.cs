@@ -5,6 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Diagnostics;
 using rtmpproxy.Messages;
+using System.IO;
 
 namespace rtmpproxy
 {
@@ -21,7 +22,6 @@ namespace rtmpproxy
     class RTMPEndpoint
     {
 
-        private const int standardWindowSize = 2500000;
         private const int versionPayloadLength = 1536;
         private const int versionNumber = 3;
         private readonly static byte[] emptyArray = new byte[0];
@@ -179,13 +179,22 @@ namespace rtmpproxy
             }
             return true;
         }
-        public void SendWinAck()
+        public void ReplyConnect()
         {
-            if (options.WindowSize <= 0)
-                options.WindowSize = standardWindowSize;
+            var dataChunks = new byte[][] {
+                new WinAck(options.WindowSize).Serialize(),
+                new Bandwidth(options.WindowSize).Serialize(),
+                new StreamBegin().Serialize(),
+                new SetChunkSize().Serialize(),
+                new ResultSuccess().Serialize()
+            };
 
-            var WinAckPacket = new WinAck(options.WindowSize);
-            Send(WinAckPacket.Serialize());
+            var sendData = new MemoryStream();
+            sendData.Position = 0;
+            foreach (var chunk in dataChunks)
+                sendData.Write(chunk, 0, chunk.Length);
+
+            Send(sendData.ToArray());
         }
     }
 }

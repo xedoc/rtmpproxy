@@ -29,13 +29,7 @@ namespace rtmpproxy.Messages
 
             connObject = new AMFObject(connObjectData);
           
-            App = (string)connObject.GetProperty("app");
-            TcUrl = (string)connObject.GetProperty("tcUrl");
-            SwfUrl = (string)connObject.GetProperty("swfUrl");
-            PageUrl = (string)connObject.GetProperty("pageUrl");
-            Type = (string)connObject.GetProperty("type");
-            FlashVer = (string)connObject.GetProperty("flashver");
-            Fpad = (bool)connObject.GetProperty("fpad");
+
             
             AudioCodecs = new Dictionary<AudioCodec, bool>();
             VideoCodecs = new Dictionary<VideoCodec, bool>();
@@ -80,40 +74,85 @@ namespace rtmpproxy.Messages
         }
         public String Type
         {
-            get;
-            set;
+            get
+            {
+                return connObject.GetProperty("type") as string;
+            }
+            set
+            {
+                connObject.SetProperty("type", value, AMF0Types.String);
+            }
         }
         public String App
         {
             get { 
-                var v = connObject.GetProperty("app"); 
-                return v == null?null:v as string;  }
+                return connObject.GetProperty("app") as string; 
+            }
             set 
             {
-                
+                connObject.SetProperty("app", value, AMF0Types.String);
             }
         }
         public String FlashVer
         {
-            get;
-            set;
+            get { 
+                return connObject.GetProperty("flashver") as string; 
+            }
+            set {
+                connObject.SetProperty("flashver", value, AMF0Types.String);
+            }
         }
         public String SwfUrl
         {
-            get;
-            set;
+            get 
+            {
+                return connObject.GetProperty("swfUrl") as string;
+            }
+            set
+            {
+                connObject.SetProperty("swfUrl", value, AMF0Types.String);
+            }
         }
         public String TcUrl
         {
-            get;
-            set;
+            get
+            {
+                return connObject.GetProperty("tcUrl") as string;
+            }
+
+            set
+            {
+                connObject.SetProperty("tcUrl", value, AMF0Types.String);
+            }  
         }
         public Boolean Fpad
         {
-            get;
-            set;
+            get
+            {
+                var v = connObject.GetProperty("fpad");
+                if (v == null)
+                    return false;
+                else
+                    return (bool)v;
+            }
+            set
+            {
+                connObject.SetProperty("fpad", value, AMF0Types.Boolean);
+            }
         }
-        public Dictionary<AudioCodec,bool> AudioCodecs
+        public String PageUrl
+        {
+            get
+            {
+                return connObject.GetProperty("pageUrl") as string;
+            }
+
+            set
+            {
+                connObject.SetProperty("pageUrl", value, AMF0Types.String);
+            }  
+        }
+        public Dictionary<AudioCodec, bool> AudioCodecs
         {
             get;
             set;
@@ -124,11 +163,6 @@ namespace rtmpproxy.Messages
             set;
         }
         public VideoFunction VideoFunction
-        {
-            get;
-            set;
-        }
-        public String PageUrl
         {
             get;
             set;
