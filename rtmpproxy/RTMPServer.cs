@@ -33,10 +33,31 @@ namespace rtmpproxy
             var endpoint = sender as RTMPEndpoint;
             endpoint.ReplyConnect();
         }
+        private void OnCreateStream( object sender, AMFCallData data )
+        {
+            var endpoint = sender as RTMPEndpoint;
+            endpoint.ReplyCreateStream();
+        }
+        private void OnReleaseStream( object sender, AMFCallData data )
+        {
+        }
+        private void OnFCPublish(object sender, AMFCallData data)
+        {
+        }
+        private void OnPublish(object sender, AMFCallData data)
+        {
+            var endpoint = sender as RTMPEndpoint;
+            endpoint.ReplyPublish();
+        }
         private void OnNewClient(object sender, SocketData socketdata)
         {
             var client = new RTMPEndpoint(socketdata.Socket);
             client.OnConnect += OnConnect;
+            client.OnCreateStream += OnCreateStream;
+            client.OnReleaseStream += OnReleaseStream;
+            client.OnFCPublish += OnFCPublish;
+            client.OnPublish += OnPublish;
+
             clients.Add(client);
         }
         public bool Start()

@@ -46,7 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AMFCall.cs" />
     <Compile Include="AMFObject.cs" />
+    <Compile Include="AMFProperty.cs" />
     <Compile Include="ArrayUtil.cs" />
     <Compile Include="Messages\CmdConnect.cs" />
     <Compile Include="Messages\Header.cs" />

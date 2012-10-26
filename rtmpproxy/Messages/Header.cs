@@ -34,7 +34,7 @@ namespace rtmpproxy.Messages
             get;
             set;
         }
-        public UInt32 BodySize
+        public int BodySize
         {
             get;
             set;

@@ -30,6 +30,19 @@ namespace rtmpproxy
             set;
         }
     }
+    class AMFCallData : EventArgs
+    {
+        public AMFCallData(byte[] payload)
+        {
+            var obj = new AMFCall(payload);
+            Call = obj;
+        }
+        public AMFCall Call
+        {
+            get;
+            set;
+        }
+    }
 
     class ConnectData : EventArgs
     {
